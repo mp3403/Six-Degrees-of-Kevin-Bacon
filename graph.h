@@ -1,1 +1,8 @@
-class Graph;
+#pragma once
+
+using namespace std;
+
+class Graph
+{
+
+};

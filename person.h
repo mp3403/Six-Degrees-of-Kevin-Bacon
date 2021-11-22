@@ -1,1 +1,8 @@
-class Person;
+#pragma once
+
+using namespace std;
+
+class Person
+{
+
+};
