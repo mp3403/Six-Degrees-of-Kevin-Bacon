@@ -6,7 +6,7 @@ using namespace std;
 
 class Person
 {
-    set<pair<string, string>> films;
+    set<string> films;
     enum Occupations {ACTOR, DIRECTOR, PRODUCER};
-    
+
 };

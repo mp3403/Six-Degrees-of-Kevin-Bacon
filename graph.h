@@ -1,12 +1,16 @@
 #pragma once
 #include "person.h"
 #include <list>
+#include <map>
+#include <unordered_map>
 
 using namespace std;
 
 class Graph
 {
+    //TODO: do away with array, make map<Person, vector<Person>> pointer
     list<Person>* adjList;
+    unordered_map<int, Person> m;
 
     public:
         Graph(int numInputs);
