@@ -1,10 +1,12 @@
 #pragma once
+#include <set>
+#include <string>
 
 using namespace std;
 
 class Person
 {
     set<pair<string, string>> films;
-    enum occupations {actor, director, producer};
-    enum occupations job;
+    enum Occupations {ACTOR, DIRECTOR, PRODUCER};
+    
 };
