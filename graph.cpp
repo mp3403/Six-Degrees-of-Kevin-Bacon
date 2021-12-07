@@ -3,6 +3,7 @@
 #include <iterator>
 #include <unordered_map>
 #include <queue>
+#include <stack>
 
 Graph::Graph(int numInputs) {
     this->adjList = new unordered_map<Person, vector<Person>>;
@@ -133,4 +134,73 @@ vector<Person> Graph::BFS(Person& from, Person& to) {
     }
 
     return path;
+}
+
+Person Graph::DFS() {
+    Person kevinBacon;
+    stack<Person> stk;
+    set<Person> visited;
+    
+    visited.insert(this->adjList->begin()->first);
+    stk.push(this->adjList->begin()->first);
+    
+    while (!stk.empty()) {
+        Person p = stk.top();
+        stk.pop();
+
+        if (p.getName() == "Kevin Bacon") {
+            kevinBacon = p;
+            break;
+        }
+        
+        vector<Person> neighbors = this->adjList->at(p);
+        
+        for (Person i : neighbors) {
+            if (visited.count(i) == 0) {
+                visited.insert(i);
+                stk.push(i);
+            }
+        }
+    }
+
+    return kevinBacon;
+}
+
+vector<Person> Graph::DFS(Person& to) {
+    vector<Person> shortestPath(V()); //the shortest path will be, in the worst case, V vertices long
+
+    for (auto iter = this->adjList->begin(); iter != this->adjList->end(); ++iter) {
+        stack<Person> stk;
+        set<Person> visited;
+        vector<Person> tempPath;
+        
+        visited.insert(iter->first);
+        stk.push(iter->first);
+        tempPath.push_back(iter->first);
+        
+        while (!stk.empty()) {
+            Person p = stk.top();
+            stk.pop();
+
+            tempPath.push_back(p);
+
+            if (p.getName() == to.getName()) {
+                break;
+            }
+            
+            vector<Person> neighbors = this->adjList->at(p);
+            
+            for (Person i : neighbors) {
+                if (visited.count(i) == 0) {
+                    visited.insert(i);
+                    stk.push(i);
+                }
+            }
+        }
+
+        if (tempPath.size() < shortestPath.size())
+            shortestPath = tempPath;
+    }
+
+    return shortestPath;
 }
