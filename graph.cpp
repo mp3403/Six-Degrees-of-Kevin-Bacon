@@ -1,9 +1,10 @@
 #include "graph.h"
 #include <algorithm>
 #include <iterator>
+#include <unordered_map>
 
 Graph::Graph(int numInputs) {
-    this->adjList = new list<Person>[numInputs];
+    this->adjList = new unordered_map<Person, vector<Person>>;
 }
 
 Graph::~Graph() {
@@ -17,20 +18,25 @@ int Graph::V() {
 int Graph::E() {
     int numEdges;
 
-    for (int i = 0; i < this->adjList->size(); i++) {
-        numEdges += this->adjList[i].size();
+    for (auto iter = this->adjList->begin(); iter != this->adjList->end(); ++iter) {
+        numEdges += iter->second.size();
     }
 
     return numEdges;
 }
 
-void Graph::insert(Person p) {
+void Graph::insert(Person& p) {
+    vector<Person> v;
+    this->adjList->insert(make_pair(p, v));
 
+    set<string> intersection;
 
-    for (int i = 0; i < this->adjList->size(); i++) {
+    for (auto iter = this->adjList->begin(); iter != this->adjList->end(); ++iter) {
         //TODO: if intersection != null, add edge
-        set<string> intersection;
         //TODO: change variables below
-        set_intersection(set1.begin(), set1.end(), set2.begin(), set2.end(), inserter(res1,res1.begin()));
+        set_intersection(p.getFilms().begin(), p.getFilms().end(), iter->first.getFilms().begin(), iter->first.getFilms().end(), inserter(intersection, intersection.begin()));
+
+        if (intersection.size() > 0)
+            iter->second.push_back(p);
     }
 }
