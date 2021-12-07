@@ -8,7 +8,6 @@ using namespace std;
 
 class Graph
 {
-    //TODO: do away with array, make map<Person, vector<Person>> pointer
     unordered_map<Person, vector<Person>>* adjList;
 
     public:
@@ -21,4 +20,10 @@ class Graph
         void isEdge(Person from, Person to);
         list<Person>& getAdjacent(Person& p);
         void printGraph();
+        Person BFS(); //finds Kevin Bacon vertex
+        Person BFS(Person& to); //from Kevin Bacon vertex
+        Person BFS(Person& from, Person& to);
+        Person DFS(); //finds Kevin Bacon vertex
+        Person DFS(Person& to); //from Kevin Bacon vertex, returns shortest DFS path
+        Person DFS(Person& from, Person& to); //returns shortest DFS path
 };
