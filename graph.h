@@ -21,9 +21,9 @@ class Graph
         list<Person>& getAdjacent(Person& p);
         void printGraph();
         Person BFS(); //finds Kevin Bacon vertex
-        Person BFS(Person& to); //from Kevin Bacon vertex
-        Person BFS(Person& from, Person& to);
+        vector<Person> BFS(Person& to); //from Kevin Bacon vertex, returns path
+        vector<Person> BFS(Person& from, Person& to); // returns path
         Person DFS(); //finds Kevin Bacon vertex
-        Person DFS(Person& to); //from Kevin Bacon vertex, returns shortest DFS path
-        Person DFS(Person& from, Person& to); //returns shortest DFS path
+        vector<Person> DFS(Person& to); //from Kevin Bacon vertex, returns shortest DFS path
+        vector<Person> DFS(Person& from, Person& to); //returns shortest DFS path
 };

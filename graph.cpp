@@ -70,17 +70,57 @@ Person Graph::BFS() {
     return kevinBacon;
 }
 
-Person Graph::BFS(Person& to) {
+vector<Person> Graph::BFS(Person& to) {
     Person src = this->BFS();
     queue<Person> q;
     set<Person> visited;
+    vector<Person> path;
     
     visited.insert(src);
     q.push(src);
+    path.push_back(src);
     
     while (!q.empty()) {
         Person p = q.front();
         q.pop();
+
+        path.push_back(p);
+
+        if (p.getName() == to.getName()) {
+            break;
+        }
+
+        vector<Person> neighbors = this->adjList->at(p);
+        
+        for (Person i : neighbors) {
+            if (visited.count(i) == 0) {
+                visited.insert(i);
+                q.push(i);
+            }
+        }
+    }
+
+    return path;
+}
+
+vector<Person> Graph::BFS(Person& from, Person& to) {
+    queue<Person> q;
+    set<Person> visited;
+    vector<Person> path;
+    
+    visited.insert(from);
+    q.push(from);
+    path.push_back(from);
+    
+    while (!q.empty()) {
+        Person p = q.front();
+        q.pop();
+
+        path.push_back(p);
+
+        if (p.getName() == to.getName()) {
+            break;
+        }
         
         vector<Person> neighbors = this->adjList->at(p);
         
@@ -91,4 +131,6 @@ Person Graph::BFS(Person& to) {
             }
         }
     }
+
+    return path;
 }
