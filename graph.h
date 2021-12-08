@@ -12,13 +12,14 @@ class Graph
 
     public:
         Graph(int numInputs);
+        Graph(const Graph& g);
         ~Graph();
+        void operator=(const Graph& g);
         int V(); //returns num vertices
         int E(); //returns num edges
 
         void insert(Person& p);
         void isEdge(Person from, Person to);
-        list<Person>& getAdjacent(Person& p);
         void printGraph();
         bool pathExistsBFS(Person& to); //from Kevin Bacon vertex, returns if path exists
         bool pathExistsBFS(Person& from, Person& to); // returns if path exists

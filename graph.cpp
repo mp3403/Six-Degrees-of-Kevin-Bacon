@@ -9,8 +9,16 @@ Graph::Graph(int numInputs) {
     this->adjList = new unordered_map<Person, vector<Person>>;
 }
 
+Graph::Graph(const Graph& g) {
+    this->adjList = g.adjList;
+}
+
 Graph::~Graph() {
     delete this->adjList;
+}
+
+void Graph::operator=(const Graph& g) {
+    this->adjList = g.adjList;
 }
 
 int Graph::V() {
