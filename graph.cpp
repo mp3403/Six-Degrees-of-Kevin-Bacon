@@ -41,6 +41,63 @@ void Graph::insert(Person& p) {
     }
 }
 
+bool Graph::pathExistsBFS(Person& to) {
+    Person src = this->BFS();
+    queue<Person> q;
+    set<Person> visited;
+    
+    visited.insert(src);
+    q.push(src);
+    
+    while (!q.empty()) {
+        Person p = q.front();
+        q.pop();
+
+        if (p.getName() == to.getName()) {
+            return true;
+        }
+
+        vector<Person> neighbors = this->adjList->at(p);
+        
+        for (Person i : neighbors) {
+            if (visited.count(i) == 0) {
+                visited.insert(i);
+                q.push(i);
+            }
+        }
+    }
+
+    return false;
+}
+
+bool Graph::pathExistsBFS(Person& from, Person& to) {
+    queue<Person> q;
+    set<Person> visited;
+    
+    visited.insert(from);
+    q.push(from);
+    
+    while (!q.empty()) {
+        Person p = q.front();
+        q.pop();
+
+        if (p.getName() == to.getName()) {
+            return true;
+        }
+        
+        vector<Person> neighbors = this->adjList->at(p);
+        
+        for (Person i : neighbors) {
+            if (visited.count(i) == 0) {
+                visited.insert(i);
+                q.push(i);
+            }
+        }
+    }
+
+    return false;
+}
+
 Person Graph::BFS() {
     Person kevinBacon;
     queue<Person> q;
@@ -166,41 +223,59 @@ Person Graph::DFS() {
     return kevinBacon;
 }
 
-vector<Person> Graph::DFS(Person& to) {
-    vector<Person> shortestPath(V()); //the shortest path will be, in the worst case, V vertices long
+bool Graph::DFS(Person& to) {
+    stack<Person> stk;
+    set<Person> visited;
+    Person src = this->DFS();
+    
+    visited.insert(src);
+    stk.push(src);
+    
+    while (!stk.empty()) {
+        Person p = stk.top();
+        stk.pop();
 
-    for (auto iter = this->adjList->begin(); iter != this->adjList->end(); ++iter) {
-        stack<Person> stk;
-        set<Person> visited;
-        vector<Person> tempPath;
+        if (p.getName() == to.getName()) {
+            return true;
+        }
         
-        visited.insert(iter->first);
-        stk.push(iter->first);
-        tempPath.push_back(iter->first);
+        vector<Person> neighbors = this->adjList->at(p);
         
-        while (!stk.empty()) {
-            Person p = stk.top();
-            stk.pop();
-
-            tempPath.push_back(p);
-
-            if (p.getName() == to.getName()) {
-                break;
-            }
-            
-            vector<Person> neighbors = this->adjList->at(p);
-            
-            for (Person i : neighbors) {
-                if (visited.count(i) == 0) {
-                    visited.insert(i);
-                    stk.push(i);
-                }
+        for (Person i : neighbors) {
+            if (visited.count(i) == 0) {
+                visited.insert(i);
+                stk.push(i);
             }
         }
-
-        if (tempPath.size() < shortestPath.size())
-            shortestPath = tempPath;
     }
 
-    return shortestPath;
+    return false;
+}
+
+bool Graph::DFS(Person& from, Person& to) {
+    stack<Person> stk;
+    set<Person> visited;
+    
+    visited.insert(from);
+    stk.push(from);
+    
+    while (!stk.empty()) {
+        Person p = stk.top();
+        stk.pop();
+
+        if (p.getName() == to.getName()) {
+            return true;
+        }
+        
+        vector<Person> neighbors = this->adjList->at(p);
+        
+        for (Person i : neighbors) {
+            if (visited.count(i) == 0) {
+                visited.insert(i);
+                stk.push(i);
+            }
+        }
+    }
+
+    return false;
 }

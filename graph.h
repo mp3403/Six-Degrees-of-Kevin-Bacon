@@ -20,10 +20,12 @@ class Graph
         void isEdge(Person from, Person to);
         list<Person>& getAdjacent(Person& p);
         void printGraph();
+        bool pathExistsBFS(Person& to); //from Kevin Bacon vertex, returns if path exists
+        bool pathExistsBFS(Person& from, Person& to); // returns if path exists
         Person BFS(); //finds Kevin Bacon vertex
         vector<Person> BFS(Person& to); //from Kevin Bacon vertex, returns path
         vector<Person> BFS(Person& from, Person& to); // returns path
         Person DFS(); //finds Kevin Bacon vertex
-        vector<Person> DFS(Person& to); //from Kevin Bacon vertex, returns shortest DFS path
-        vector<Person> DFS(Person& from, Person& to); //returns shortest DFS path
+        bool DFS(Person& to); //from Kevin Bacon vertex, returns shortest DFS path
+        bool DFS(Person& from, Person& to); //returns shortest DFS path
 };
