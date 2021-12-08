@@ -28,41 +28,56 @@ void Interface()
     {
         Menu();
         int input;
-        string input2, input3;
+        string firstName, lastName, name;
         cin >> input;
         cout << endl;
         if (input == 1)
         {
             cout << "Enter the first and last name of any actor / actress: ";
-            cin >> input2;
+            cin >> firstName;
+            cin >> lastName;
+            name = firstName + " " + lastName;
             //graph.Separation("Kevin Bacon", input);
         }
         else if (input == 2)
         {
             cout << "Enter the first and last name of any director: ";
-            cin >> input2;
+            cin >> firstName;
+            cin >> lastName;
+            name = firstName + " " + lastName;
             //graph.Separation("Kevin Bacon", input);
         }
         else if (input == 3)
         {
             cout << "Enter the first and last name of any producer: ";
-            cin >> input2;
+            cin >> firstName;
+            cin >> lastName;
+            name = firstName + " " + lastName;
             //graph.Separation("Kevin Bacon", input);
         }
         else if (input == 4)
         {
             cout << "Enter the first and last name of the first actor / actress: ";
-            cin >> input2;
+            cin >> firstName;
+            cin >> lastName;
+            name = firstName + " " + lastName;
             cout << "Enter the first and last name of the other actor / actress: ";
-            cin >> input3;
-            //graph.Separation(input2, input3);
+            string firstName2, lastName2, name2;
+            cin >> firstName2;
+            cin >> lastName2;
+            name2 = firstName2 + " " + lastName2;
+            //graph.Separation(name, name2);
+            firstName2.clear();
+            lastName2.clear();
+            name2.clear();
         }
         if (input == 5)
             run = false;
         else
         {
-            input2.clear();
-            input3.clear();
+            firstName.clear();
+            lastName.clear();
+            name.clear();
             cout << endl << "Run again? (enter y or n): ";
             string again;
             cin >> again;
@@ -100,8 +115,12 @@ void IO()
             int castActress = line.find("actress)");
             int hasDirectors = line.find("directors");
             int hasProducers = line.find("producers");
+            int hasBR = line.find("<br/>");
+            int hasDash = line.find("\\");
+            bool left = count(line.begin(), line.end(), '[');
+            bool right = count(line.begin(), line.end(), ']');
 
-            if (hasTitle > 0 && hasCast > 0 && hasDirectors > 0 && hasProducers > 0 && titleFilm < 0 && castActor < 0 && castActress < 0)
+            if (hasTitle > 0 && hasCast > 0 && hasDirectors > 0 && hasProducers > 0 && titleFilm < 0 && castActor < 0 && castActress < 0 && hasBR < 0 && hasDash < 0 && (left == right))
             {
 
                 title = line.substr(10, line.find("cast") - 13);
@@ -109,27 +128,95 @@ void IO()
                 cout << title << endl;
 
                 cast = line.substr(1, line.find("directors") - 4);
-                cout << "Cast: " << cast << endl;
 
                 if (cast != "[]}" && cast != "[]") {
                     line = line.substr(line.find("directors") + 11);
 
-                    int k = count(cast.begin(), cast.end(), ']') / 2;
+                    int k = count(cast.begin(), cast.end(), '\"') / 2;
                     for (int j = 0; j < k; j++)
                     {
-                        string actorName = cast.substr(cast.find("[") + 2, cast.find("]") - 2);
-                        if (j < k - 1)
-                            cast = cast.substr(actorName.length() + 7);
-                        cout << actorName << endl;
+                        string actorName;
+                        if (cast.at(1) == '[')
+                        {
+                            actorName = cast.substr(cast.find("\"") + 3, cast.find("]") - 3);
+                            if (j < k - 1)
+                                cast = cast.substr(actorName.length() + 7);
+                        }
+                        else
+                        {
+                            if (cast.at(0) == '\"')
+                                cast = cast.substr(1);
+                            actorName = cast.substr(0, cast.find("\""));
+                            if (j < k - 1)
+                                cast = cast.substr(actorName.length() + 2);
+                        }
+                        //mark use actorName here to build graph
                     }
 
+                    directors = line.substr(1, line.find("producers") - 4);
+                    line = line.substr(line.find("producers") + 10);
 
-                    directors = line.substr(0, line.find("producers") - 2);
-                    line = line.substr(line.find("producers") + 11);
-                    cout << "Directors: " << directors << endl;
+                    if (directors != "[]}" && directors != "[]") {
+                        line = line.substr(line.find("producers") + 2);
 
-                    producers = line.substr(0, line.find("companies") - 2);
-                    cout << "Producers: " << producers << endl;
+                        int m = count(directors.begin(), directors.end(), '\"') / 2;
+                        for (int j = 0; j < m; j++)
+                        {
+                            string directorName;
+                            if (directors.at(1) == '[')
+                            {
+                                directorName = directors.substr(directors.find("\"") + 3, directors.find("]") - 3);
+                                if (j < m - 1)
+                                    directors = directors.substr(directorName.length() + 7);
+                            }
+                            else
+                            {
+                                if (directors.at(0) == '\"')
+                                    directors = directors.substr(1);
+                                directorName = directors.substr(0, directors.find("\""));
+                                if (j < m - 1)
+                                    directors = directors.substr(directorName.length() + 2);
+                            }
+                            //mark use directorName here to build graph
+                        }
+
+
+                        producers = line.substr(1, line.find("companies") - 4);
+                        line = line.substr(line.find("companies") + 10);
+                        cout << "Producers: " << producers << endl;
+
+                        
+
+                        if (producers.length() != 0 && producers.at(0) != ']' && producers != "[]}" && producers != "[]" && line != ":[]}") {
+                            directors = line.substr(1, line.find("companies") - 4);
+                            line = line.substr(line.find("companies") + 9);
+                            line = line.substr(line.find("companies") + 2);
+
+                            int o = count(producers.begin(), producers.end(), '\"') / 2;
+                            for (int j = 0; j < o; j++)
+                            {
+                                string producerName;
+                                if (producers.at(1) == '[')
+                                {
+                                    producerName = producers.substr(producers.find("\"") + 3, producers.find("]") - 3);
+                                    if (j < o - 1)
+                                        producers = producers.substr(producerName.length() + 7);
+                                }
+                                else
+                                {
+                                    if (producers.at(0) == '\"')
+                                        producers = producers.substr(1);
+                                    producerName = producers.substr(0, producers.find("\""));
+                                    if (j < o - 1)
+                                        producers = producers.substr(producerName.length() + 2);
+                                }
+                                if (producerName != ",")
+                                {
+                                    //mark use producerName here to build graph
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -138,7 +225,7 @@ void IO()
 
 int main()
 {
-    Interface();
+    IO();
 
     return 0;
 }
