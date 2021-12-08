@@ -5,7 +5,7 @@
 #include <queue>
 #include <stack>
 
-Graph::Graph(int numInputs) {
+Graph::Graph() {
     this->adjList = new unordered_map<Person, vector<Person>>;
 }
 
@@ -35,7 +35,27 @@ int Graph::E() {
     return numEdges;
 }
 
-void Graph::insert(Person& p) {
+void Graph::insert(Person& p, string& film) {
+    if (this->adjList->find(p) == this->adjList->end()) {
+        vector<Person> v;
+        this->adjList->insert(make_pair(p, v));
+    } else {
+        this->adjList->at(p).first.addFilm(film); //fix this later
+    }
+
+    set<string> intersection;
+
+    for (auto iter = this->adjList->begin(); iter != this->adjList->end(); ++iter) {
+        set_intersection(p.getFilms().begin(), p.getFilms().end(), iter->first.getFilms().begin(), iter->first.getFilms().end(), inserter(intersection, intersection.begin()));
+
+        if (intersection.size() > 0) {
+            iter->second.push_back(p);
+            this->adjList->at(p).push_back(iter->first);
+        }
+    }
+}
+
+void Graph::insert(Person& p, string& film) {
     vector<Person> v;
     this->adjList->insert(make_pair(p, v));
 

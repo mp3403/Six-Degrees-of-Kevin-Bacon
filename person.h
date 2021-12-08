@@ -8,9 +8,12 @@ class Person
 {
     string name;
     set<string> films;
-    enum Occupations {ACTOR, DIRECTOR, PRODUCER};
+    int occupation;
 
     public:
+        enum Occupation {ACTOR, DIRECTOR, PRODUCER};
+        Person(string& name, Occupation occupation);
+        void addFilm(string& film);
         set<string> getFilms() const;
         void setFilms(set<string>& films);
         string getName() const;

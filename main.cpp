@@ -1,3 +1,5 @@
+#include "person.h"
+#include "graph.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -89,7 +91,7 @@ void Interface()
     }
 }
 
-void IO()
+void BuildGraph(Graph& graph)
 {
     ifstream file("data.txt");
     const int NUMBER_OF_FILMS = 146727;
@@ -150,7 +152,10 @@ void IO()
                             if (j < k - 1)
                                 cast = cast.substr(actorName.length() + 2);
                         }
-                        //mark use actorName here to build graph
+
+                        Person p(actorName, Person::ACTOR);
+                        graph.insert(p);
+                        
                     }
 
                     directors = line.substr(1, line.find("producers") - 4);
@@ -225,7 +230,8 @@ void IO()
 
 int main()
 {
-    IO();
+    Graph graph;
+    BuildGraph(graph); //builds graph from .txt data
 
     return 0;
 }

@@ -11,7 +11,7 @@ class Graph
     unordered_map<Person, vector<Person>>* adjList;
 
     public:
-        Graph(int numInputs);
+        Graph();
         Graph(const Graph& g);
         ~Graph();
         void operator=(const Graph& g);
@@ -19,6 +19,7 @@ class Graph
         int E(); //returns num edges
 
         void insert(Person& p);
+        void insert(Person& p, string& film);
         void isEdge(Person from, Person to);
         void printGraph();
         bool pathExistsBFS(Person& to); //from Kevin Bacon vertex, returns if path exists

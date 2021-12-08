@@ -1,5 +1,14 @@
 #include "person.h"
 
+Person::Person(string& name, Occupation occupation) {
+    this->name = name;
+    this->occupation = occupation;
+}
+
+void Person::addFilm(string& film) {
+    this->films.insert(film);
+}
+
 set<string> Person::getFilms() const {
     return this->films;
 }
