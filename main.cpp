@@ -98,6 +98,8 @@ void BuildGraph(Graph& graph)
 
     if (file.is_open())
     {
+        cout << "Creating graph..." << endl;
+        
         string line; // "line" is the whole line from the data file, "line" contains all data for a single film
         // separate the string into respective parts
         string title;
@@ -106,7 +108,7 @@ void BuildGraph(Graph& graph)
         string producers;
 
         // while there is a line to be gotten
-        for (int i = 0; i < 146727; i++)
+        for (int i = 0; i < 146545; i++)
         {
             getline(file, line);
 
@@ -127,7 +129,6 @@ void BuildGraph(Graph& graph)
 
                 title = line.substr(10, line.find("cast") - 13);
                 line = line.substr(line.find("cast") + 6);
-                cout << title << endl;
 
                 cast = line.substr(1, line.find("directors") - 4);
 
@@ -152,10 +153,9 @@ void BuildGraph(Graph& graph)
                             if (j < k - 1)
                                 cast = cast.substr(actorName.length() + 2);
                         }
-
+                        //mark use actorName here to build graph
                         Person p(actorName, Person::ACTOR);
                         graph.insert(p);
-                        
                     }
 
                     directors = line.substr(1, line.find("producers") - 4);
@@ -183,12 +183,13 @@ void BuildGraph(Graph& graph)
                                     directors = directors.substr(directorName.length() + 2);
                             }
                             //mark use directorName here to build graph
+                            Person p(directorName, Person::DIRECTOR);
+                            graph.insert(p);
                         }
 
-
+                        
                         producers = line.substr(1, line.find("companies") - 4);
                         line = line.substr(line.find("companies") + 10);
-                        cout << "Producers: " << producers << endl;
 
                         
 
@@ -218,13 +219,17 @@ void BuildGraph(Graph& graph)
                                 if (producerName != ",")
                                 {
                                     //mark use producerName here to build graph
+                                    Person p(producerName, Person::PRODUCER);
+                                    graph.insert(p);
                                 }
                             }
                         }
                     }
+                    //if we do something with vectors do it here
                 }
             }
         }
+        cout << "Graph complete!" << endl;
     }
 }
 
