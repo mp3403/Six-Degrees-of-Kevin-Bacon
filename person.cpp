@@ -1,4 +1,11 @@
 #include "person.h"
+#include "graph.h"
+
+Person::Person() {
+    this->name = "Kevin Bacon";
+    this->films = {};
+    this->occupation = Person::ACTOR;
+}
 
 Person::Person(string& name, Occupation occupation) {
     this->name = name;

@@ -1,4 +1,5 @@
 #include "graph.h"
+#include "person.h"
 #include <algorithm>
 #include <iterator>
 #include <unordered_map>
@@ -6,18 +7,22 @@
 #include <stack>
 
 Graph::Graph() {
-    this->adjList = new unordered_map<Person, vector<Person>>;
+    this->m = new unordered_map<string, Person>;
+    this->adjList = new unordered_map<string, set<string>>;
 }
 
 Graph::Graph(const Graph& g) {
+    this->m = g.m;
     this->adjList = g.adjList;
 }
 
 Graph::~Graph() {
+    delete this->m;
     delete this->adjList;
 }
 
 void Graph::operator=(const Graph& g) {
+    this->m = g.m;
     this->adjList = g.adjList;
 }
 
@@ -35,87 +40,44 @@ int Graph::E() {
     return numEdges;
 }
 
-void Graph::insert(Person& p, string& film) {
-    if (this->adjList->find(p) == this->adjList->end()) {
-        vector<Person> v;
-        this->adjList->insert(make_pair(p, v));
+void Graph::insert(string& name, Person::Occupation occupation, string& film) {
+    if (this->adjList->find(name) == this->adjList->end()) {
+        set<string> s;
+        this->adjList->insert(make_pair(name, s));
     } else {
-        this->adjList->at(p).first.addFilm(film); //fix this later
+        this->m->at(name).addFilm(film);
     }
 
     set<string> intersection;
 
     for (auto iter = this->adjList->begin(); iter != this->adjList->end(); ++iter) {
-        set_intersection(p.getFilms().begin(), p.getFilms().end(), iter->first.getFilms().begin(), iter->first.getFilms().end(), inserter(intersection, intersection.begin()));
+        set_intersection(m->at(name).getFilms().begin(), m->at(name).getFilms().end(), m->at(iter->first).getFilms().begin(), m->at(iter->first).getFilms().end(), inserter(intersection, intersection.begin()));
 
         if (intersection.size() > 0) {
-            iter->second.push_back(p);
-            this->adjList->at(p).push_back(iter->first);
+            iter->second.insert(name);
+            this->adjList->at(name).insert(iter->first);
         }
     }
 }
 
-void Graph::insert(Person& p, string& film) {
-    vector<Person> v;
-    this->adjList->insert(make_pair(p, v));
-
-    set<string> intersection;
-
-    for (auto iter = this->adjList->begin(); iter != this->adjList->end(); ++iter) {
-        set_intersection(p.getFilms().begin(), p.getFilms().end(), iter->first.getFilms().begin(), iter->first.getFilms().end(), inserter(intersection, intersection.begin()));
-
-        if (intersection.size() > 0)
-            iter->second.push_back(p);
-    }
-}
-
-bool Graph::pathExistsBFS(Person& to) {
-    Person src = this->BFS();
-    queue<Person> q;
-    set<Person> visited;
-    
-    visited.insert(src);
-    q.push(src);
-    
-    while (!q.empty()) {
-        Person p = q.front();
-        q.pop();
-
-        if (p.getName() == to.getName()) {
-            return true;
-        }
-
-        vector<Person> neighbors = this->adjList->at(p);
-        
-        for (Person i : neighbors) {
-            if (visited.count(i) == 0) {
-                visited.insert(i);
-                q.push(i);
-            }
-        }
-    }
-
-    return false;
-}
-
-bool Graph::pathExistsBFS(Person& from, Person& to) {
-    queue<Person> q;
-    set<Person> visited;
+bool Graph::pathExistsBFS(string& from, string& to) {
+    queue<string> q;
+    set<string> visited;
     
     visited.insert(from);
     q.push(from);
     
     while (!q.empty()) {
-        Person p = q.front();
+        string p = q.front();
         q.pop();
 
-        if (p.getName() == to.getName()) {
+        if (p == to) {
             return true;
         }
         
-        vector<Person> neighbors = this->adjList->at(p);
+        set<string> neighbors = this->adjList->at(p);
         
-        for (Person i : neighbors) {
+        for (string i : neighbors) {
             if (visited.count(i) == 0) {
                 visited.insert(i);
                 q.push(i);
@@ -126,59 +88,28 @@ bool Graph::pathExistsBFS(Person& from, Person& to) {
     return false;
 }
 
-Person Graph::BFS() {
-    Person kevinBacon;
-    queue<Person> q;
-    set<Person> visited;
-    
-    visited.insert(this->adjList->begin()->first);
-    q.push(this->adjList->begin()->first);
-    
-    while (!q.empty()) {
-        Person p = q.front();
-        q.pop();
-
-        if (p.getName() == "Kevin Bacon") {
-            kevinBacon = p;
-            break;
-        }
-        
-        vector<Person> neighbors = this->adjList->at(p);
-        
-        for (Person i : neighbors) {
-            if (visited.count(i) == 0) {
-                visited.insert(i);
-                q.push(i);
-            }
-        }
-    }
-
-    return kevinBacon;
-}
-
-vector<Person> Graph::BFS(Person& to) {
-    Person src = this->BFS();
-    queue<Person> q;
-    set<Person> visited;
+vector<Person> Graph::BFS(string& from, string& to) {
+    queue<string> q;
+    set<string> visited;
     vector<Person> path;
     
-    visited.insert(src);
-    q.push(src);
-    path.push_back(src);
+    visited.insert(from);
+    q.push(from);
+    path.push_back(m->at(from));
     
     while (!q.empty()) {
-        Person p = q.front();
+        string p = q.front();
         q.pop();
 
-        path.push_back(p);
+        path.push_back(m->at(p));
 
-        if (p.getName() == to.getName()) {
+        if (p == to) {
             break;
         }
-
-        vector<Person> neighbors = this->adjList->at(p);
         
-        for (Person i : neighbors) {
+        set<string> neighbors = this->adjList->at(p);
+        
+        for (string i : neighbors) {
             if (visited.count(i) == 0) {
                 visited.insert(i);
                 q.push(i);
@@ -189,115 +120,24 @@ vector<Person> Graph::BFS(Person& to) {
     return path;
 }
 
-vector<Person> Graph::BFS(Person& from, Person& to) {
-    queue<Person> q;
-    set<Person> visited;
-    vector<Person> path;
-    
-    visited.insert(from);
-    q.push(from);
-    path.push_back(from);
-    
-    while (!q.empty()) {
-        Person p = q.front();
-        q.pop();
-
-        path.push_back(p);
-
-        if (p.getName() == to.getName()) {
-            break;
-        }
-        
-        vector<Person> neighbors = this->adjList->at(p);
-        
-        for (Person i : neighbors) {
-            if (visited.count(i) == 0) {
-                visited.insert(i);
-                q.push(i);
-            }
-        }
-    }
-
-    return path;
-}
-
-Person Graph::DFS() {
-    Person kevinBacon;
-    stack<Person> stk;
-    set<Person> visited;
-    
-    visited.insert(this->adjList->begin()->first);
-    stk.push(this->adjList->begin()->first);
-    
-    while (!stk.empty()) {
-        Person p = stk.top();
-        stk.pop();
-
-        if (p.getName() == "Kevin Bacon") {
-            kevinBacon = p;
-            break;
-        }
-        
-        vector<Person> neighbors = this->adjList->at(p);
-        
-        for (Person i : neighbors) {
-            if (visited.count(i) == 0) {
-                visited.insert(i);
-                stk.push(i);
-            }
-        }
-    }
-
-    return kevinBacon;
-}
-
-bool Graph::DFS(Person& to) {
-    stack<Person> stk;
-    set<Person> visited;
-    Person src = this->DFS();
-    
-    visited.insert(src);
-    stk.push(src);
-    
-    while (!stk.empty()) {
-        Person p = stk.top();
-        stk.pop();
-
-        if (p.getName() == to.getName()) {
-            return true;
-        }
-        
-        vector<Person> neighbors = this->adjList->at(p);
-        
-        for (Person i : neighbors) {
-            if (visited.count(i) == 0) {
-                visited.insert(i);
-                stk.push(i);
-            }
-        }
-    }
-
-    return false;
-}
-
-bool Graph::DFS(Person& from, Person& to) {
-    stack<Person> stk;
-    set<Person> visited;
+bool Graph::DFS(string& from, string& to) {
+    stack<string> stk;
+    set<string> visited;
     
     visited.insert(from);
     stk.push(from);
     
     while (!stk.empty()) {
-        Person p = stk.top();
+        string p = stk.top();
         stk.pop();
 
-        if (p.getName() == to.getName()) {
+        if (p == to) {
             return true;
         }
         
-        vector<Person> neighbors = this->adjList->at(p);
+        set<string> neighbors = this->adjList->at(p);
         
-        for (Person i : neighbors) {
+        for (string i : neighbors) {
             if (visited.count(i) == 0) {
                 visited.insert(i);
                 stk.push(i);

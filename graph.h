@@ -8,7 +8,8 @@ using namespace std;
 
 class Graph
 {
-    unordered_map<Person, vector<Person>>* adjList;
+    unordered_map<string, Person>* m;
+    unordered_map<string, set<string>>* adjList;
 
     public:
         Graph();
@@ -18,16 +19,9 @@ class Graph
         int V(); //returns num vertices
         int E(); //returns num edges
 
-        void insert(Person& p);
-        void insert(Person& p, string& film);
-        void isEdge(Person from, Person to);
-        void printGraph();
-        bool pathExistsBFS(Person& to); //from Kevin Bacon vertex, returns if path exists
-        bool pathExistsBFS(Person& from, Person& to); // returns if path exists
-        Person BFS(); //finds Kevin Bacon vertex
-        vector<Person> BFS(Person& to); //from Kevin Bacon vertex, returns path
-        vector<Person> BFS(Person& from, Person& to); // returns path
-        Person DFS(); //finds Kevin Bacon vertex
-        bool DFS(Person& to); //from Kevin Bacon vertex, returns shortest DFS path
-        bool DFS(Person& from, Person& to); //returns shortest DFS path
+        //void insert(Person& p);
+        void insert(string& name, Person::Occupation occupation, string& film);
+        bool pathExistsBFS(string& from, string& to); // returns if path exists
+        vector<Person> BFS(string& from, string& to); // returns path
+        bool DFS(string& from, string& to); //returns shortest DFS path
 };

@@ -1,4 +1,5 @@
 #pragma once
+#include "graph.h"
 #include <set>
 #include <string>
 
@@ -12,6 +13,7 @@ class Person
 
     public:
         enum Occupation {ACTOR, DIRECTOR, PRODUCER};
+        Person();
         Person(string& name, Occupation occupation);
         void addFilm(string& film);
         set<string> getFilms() const;
