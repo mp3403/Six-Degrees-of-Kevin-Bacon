@@ -17,7 +17,9 @@ void Menu()
     cout << "[2] Kevin Bacon and any director" << endl;
     cout << "[3] Kevin Bacon and any producer" << endl;
     cout << "[4] Any combination of 2 actors, directors, or producers" << endl;
-    cout << "[5] Exit" << endl;
+    cout << endl;
+    cout << "[5] Find any actor, director, or producer in the data" << endl;
+    cout << "[6] Exit" << endl;
     cout << "============================================================" << endl;
     cout << endl;
     cout << "Enter a menu option: ";
@@ -73,7 +75,31 @@ void Interface()
             lastName2.clear();
             name2.clear();
         }
-        if (input == 5)
+        else if (input == 5)
+        {
+            cout << "Enter the first and last name of any producer: ";
+            cin >> firstName;
+            cin >> lastName;
+            name = firstName + " " + lastName;
+            //start timer
+            /*
+            if (DFS(name))
+            {
+                //stop timer
+                cout << "DFS: " << duration << " milliseconds" << endl;
+            }
+            //start timer
+            if (BFS(name))
+            {
+                //stop timer
+                cout << "DFS: " << duration << " milliseconds" << endl;
+                cout << "Films: " << endl;
+                for (string title : name.films)
+                    cout << title << endl;
+            }
+            cout << endl << "BFS :"*/
+        }
+        if (input == 6)
             run = false;
         else
         {
@@ -237,6 +263,7 @@ int main()
 {
     Graph graph;
     BuildGraph(graph); //builds graph from .txt data
+    Interface();
 
     return 0;
 }
