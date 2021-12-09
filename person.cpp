@@ -1,5 +1,5 @@
-#include "person.h"
 #include "graph.h"
+#include "person.h"
 
 Person::Person() {
     this->name = "Kevin Bacon";

@@ -1,5 +1,5 @@
-#include "person.h"
 #include "graph.h"
+#include "person.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -180,8 +180,7 @@ void BuildGraph(Graph& graph)
                                 cast = cast.substr(actorName.length() + 2);
                         }
                         //mark use actorName here to build graph
-                        Person p(actorName, Person::ACTOR);
-                        graph.insert(p);
+                        graph.insert(actorName, Person::ACTOR, title);
                     }
 
                     directors = line.substr(1, line.find("producers") - 4);
@@ -209,8 +208,8 @@ void BuildGraph(Graph& graph)
                                     directors = directors.substr(directorName.length() + 2);
                             }
                             //mark use directorName here to build graph
-                            Person p(directorName, Person::DIRECTOR);
-                            graph.insert(p);
+                            graph.insert(directorName, Person::DIRECTOR, title);
+
                         }
 
                         
@@ -245,8 +244,7 @@ void BuildGraph(Graph& graph)
                                 if (producerName != ",")
                                 {
                                     //mark use producerName here to build graph
-                                    Person p(producerName, Person::PRODUCER);
-                                    graph.insert(p);
+                                    graph.insert(producerName, Person::PRODUCER, title);
                                 }
                             }
                         }
