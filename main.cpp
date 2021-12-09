@@ -5,27 +5,27 @@
 #include <string>
 #include <set>
 #include <algorithm>
-#include <regex>
 using namespace std;
 
 void Menu()
 {
     cout << "                 Six Degrees of Kevin Bacon                 " << endl;
     cout << "============================================================" << endl;
-    cout << "	Calculate the degrees of separation of :" << endl;
-    cout << "[1] Kevin Bacon and any actor / actress" << endl;
-    cout << "[2] Kevin Bacon and any director" << endl;
-    cout << "[3] Kevin Bacon and any producer" << endl;
-    cout << "[4] Any combination of 2 actors, directors, or producers" << endl;
+    cout << "[1] Check if 2 actors, producers, or directors" << endl;
+    cout << "    have a connection of any length" << endl;
     cout << endl;
-    cout << "[5] Find any actor, director, or producer in the data" << endl;
+    cout << "	 Calculate the degrees of separation of :" << endl;
+    cout << "[2] Kevin Bacon and any actor / actress" << endl;
+    cout << "[3] Kevin Bacon and any director" << endl;
+    cout << "[4] Kevin Bacon and any producer" << endl;
+    cout << "[5] Any combination of 2 actors, directors, or producers" << endl;
     cout << "[6] Exit" << endl;
     cout << "============================================================" << endl;
     cout << endl;
     cout << "Enter a menu option: ";
 }
 
-void Interface()
+void Interface(Graph& graph)
 {
     bool run = true;
     while (run)
@@ -35,15 +35,56 @@ void Interface()
         string firstName, lastName, name;
         cin >> input;
         cout << endl;
+
+
         if (input == 1)
+        {
+            cout << "Enter the first and last name of the first actor/director/producer: ";
+            cin >> firstName;
+            cin >> lastName;
+            name = firstName + " " + lastName;
+            cout << "Enter the first and last name of the other actor/director/produer: ";
+            string firstName2, lastName2, name2;
+            cin >> firstName2;
+            cin >> lastName2;
+            name2 = firstName2 + " " + lastName2;
+            
+            //start timer
+            bool exists = graph.pathExistsBFS(name, name2);
+            //stop timer
+            if (exists)
+                cout << "Path exists! " << endl;
+            else
+                cout << "No path exists! " << endl;
+            cout << "BFS: ";
+            //cout << "Time elapsed: " << time elapsed << " milliseconds << endl;
+
+            //start timer again
+            exists = graph.DFS(name, name2);
+            //stop timer again
+            cout << "DFS: ";
+            //cout << "Time elapsed: " << time elapsed << " milliseconds << endl;
+
+            firstName2.clear();
+            lastName2.clear();
+            name2.clear();
+        }
+        if (input == 2)
         {
             cout << "Enter the first and last name of any actor / actress: ";
             cin >> firstName;
             cin >> lastName;
             name = firstName + " " + lastName;
             //graph.Separation("Kevin Bacon", input);
+            string name2 = "Kevin Bacon";
+            vector<Person> v = graph.BFS(name, name2);
+            cout << "Degrees: " << v.size() << endl;
+            cout << name;
+            for (Person p : v)
+                cout << " ---> " << p.getName();
+            cout << name2 << endl;
         }
-        else if (input == 2)
+        else if (input == 3)
         {
             cout << "Enter the first and last name of any director: ";
             cin >> firstName;
@@ -51,7 +92,7 @@ void Interface()
             name = firstName + " " + lastName;
             //graph.Separation("Kevin Bacon", input);
         }
-        else if (input == 3)
+        else if (input == 4)
         {
             cout << "Enter the first and last name of any producer: ";
             cin >> firstName;
@@ -59,7 +100,7 @@ void Interface()
             name = firstName + " " + lastName;
             //graph.Separation("Kevin Bacon", input);
         }
-        else if (input == 4)
+        else if (input == 5)
         {
             cout << "Enter the first and last name of the first actor / actress: ";
             cin >> firstName;
@@ -74,30 +115,6 @@ void Interface()
             firstName2.clear();
             lastName2.clear();
             name2.clear();
-        }
-        else if (input == 5)
-        {
-            cout << "Enter the first and last name of any producer: ";
-            cin >> firstName;
-            cin >> lastName;
-            name = firstName + " " + lastName;
-            //start timer
-            /*
-            if (DFS(name))
-            {
-                //stop timer
-                cout << "DFS: " << duration << " milliseconds" << endl;
-            }
-            //start timer
-            if (BFS(name))
-            {
-                //stop timer
-                cout << "DFS: " << duration << " milliseconds" << endl;
-                cout << "Films: " << endl;
-                for (string title : name.films)
-                    cout << title << endl;
-            }
-            cout << endl << "BFS :"*/
         }
         if (input == 6)
             run = false;
@@ -125,7 +142,7 @@ void BuildGraph(Graph& graph)
     if (file.is_open())
     {
         cout << "Creating graph..." << endl;
-        
+
         string line; // "line" is the whole line from the data file, "line" contains all data for a single film
         // separate the string into respective parts
         string title;
@@ -152,7 +169,8 @@ void BuildGraph(Graph& graph)
 
             if (hasTitle > 0 && hasCast > 0 && hasDirectors > 0 && hasProducers > 0 && titleFilm < 0 && castActor < 0 && castActress < 0 && hasBR < 0 && hasDash < 0 && (left == right))
             {
-
+                vector<pair<string,Person::Occupation>> crew;
+                
                 title = line.substr(10, line.find("cast") - 13);
                 line = line.substr(line.find("cast") + 6);
 
@@ -180,7 +198,7 @@ void BuildGraph(Graph& graph)
                                 cast = cast.substr(actorName.length() + 2);
                         }
                         //mark use actorName here to build graph
-                        graph.insert(actorName, Person::ACTOR, title);
+                        crew.push_back(make_pair(actorName, Person::ACTOR));
                     }
 
                     directors = line.substr(1, line.find("producers") - 4);
@@ -208,15 +226,14 @@ void BuildGraph(Graph& graph)
                                     directors = directors.substr(directorName.length() + 2);
                             }
                             //mark use directorName here to build graph
-                            graph.insert(directorName, Person::DIRECTOR, title);
-
+                            crew.push_back(make_pair(directorName, Person::DIRECTOR));
                         }
 
-                        
+
                         producers = line.substr(1, line.find("companies") - 4);
                         line = line.substr(line.find("companies") + 10);
 
-                        
+
 
                         if (producers.length() != 0 && producers.at(0) != ']' && producers != "[]}" && producers != "[]" && line != ":[]}") {
                             directors = line.substr(1, line.find("companies") - 4);
@@ -244,13 +261,14 @@ void BuildGraph(Graph& graph)
                                 if (producerName != ",")
                                 {
                                     //mark use producerName here to build graph
-                                    graph.insert(producerName, Person::PRODUCER, title);
+                                    crew.push_back(make_pair(producerName, Person::PRODUCER));
                                 }
                             }
                         }
                     }
-                    //if we do something with vectors do it here
                 }
+
+                graph.insert(crew, title);
             }
         }
         cout << "Graph complete!" << endl;
@@ -261,7 +279,7 @@ int main()
 {
     Graph graph;
     BuildGraph(graph); //builds graph from .txt data
-    Interface();
+    Interface(graph);
 
     return 0;
 }

@@ -31,7 +31,7 @@ int Graph::V() {
 }
 
 int Graph::E() {
-    int numEdges;
+    int numEdges{};
 
     for (auto iter = this->adjList->begin(); iter != this->adjList->end(); ++iter) {
         numEdges += iter->second.size();
@@ -40,22 +40,25 @@ int Graph::E() {
     return numEdges;
 }
 
-void Graph::insert(string& name, Person::Occupation occupation, string& film) {
-    if (this->adjList->find(name) == this->adjList->end()) {
-        set<string> s;
-        this->adjList->insert(make_pair(name, s));
-    } else {
-        this->m->at(name).addFilm(film);
-    }
+void Graph::insert(vector<pair<string, Person::Occupation>> crew, string title) {
+    for (pair<string, Person::Occupation> person : crew)
+    {
+        if (this->adjList->find(person.first) == this->adjList->end()) {
+            set<string> s;
+            this->adjList->insert(make_pair(person.first, s));
+            Person p = Person(person.first, person.second);
+            this->m->insert(make_pair(person.first, p));
+        }
+        else {
+            this->m->at(person.first).addFilm(title);
+        }
 
-    set<string> intersection;
-
-    for (auto iter = this->adjList->begin(); iter != this->adjList->end(); ++iter) {
-        set_intersection(m->at(name).getFilms().begin(), m->at(name).getFilms().end(), m->at(iter->first).getFilms().begin(), m->at(iter->first).getFilms().end(), inserter(intersection, intersection.begin()));
-
-        if (intersection.size() > 0) {
-            iter->second.insert(name);
-            this->adjList->at(name).insert(iter->first);
+        for (pair<string, Person::Occupation> person2 : crew)
+        {
+            if (person.first != person2.first)
+            {
+                this->adjList->at(person.first).insert(person2.first);
+            }
         }
     }
 }
@@ -63,10 +66,10 @@ void Graph::insert(string& name, Person::Occupation occupation, string& film) {
 bool Graph::pathExistsBFS(string& from, string& to) {
     queue<string> q;
     set<string> visited;
-    
+
     visited.insert(from);
     q.push(from);
-    
+
     while (!q.empty()) {
         string p = q.front();
         q.pop();
@@ -74,9 +77,9 @@ bool Graph::pathExistsBFS(string& from, string& to) {
         if (p == to) {
             return true;
         }
-        
+
         set<string> neighbors = this->adjList->at(p);
-        
+
         for (string i : neighbors) {
             if (visited.count(i) == 0) {
                 visited.insert(i);
@@ -92,11 +95,11 @@ vector<Person> Graph::BFS(string& from, string& to) {
     queue<string> q;
     set<string> visited;
     vector<Person> path;
-    
+
     visited.insert(from);
     q.push(from);
     path.push_back(m->at(from));
-    
+
     while (!q.empty()) {
         string p = q.front();
         q.pop();
@@ -106,9 +109,9 @@ vector<Person> Graph::BFS(string& from, string& to) {
         if (p == to) {
             break;
         }
-        
+
         set<string> neighbors = this->adjList->at(p);
-        
+
         for (string i : neighbors) {
             if (visited.count(i) == 0) {
                 visited.insert(i);
@@ -123,10 +126,10 @@ vector<Person> Graph::BFS(string& from, string& to) {
 bool Graph::DFS(string& from, string& to) {
     stack<string> stk;
     set<string> visited;
-    
+
     visited.insert(from);
     stk.push(from);
-    
+
     while (!stk.empty()) {
         string p = stk.top();
         stk.pop();
@@ -134,9 +137,9 @@ bool Graph::DFS(string& from, string& to) {
         if (p == to) {
             return true;
         }
-        
+
         set<string> neighbors = this->adjList->at(p);
-        
+
         for (string i : neighbors) {
             if (visited.count(i) == 0) {
                 visited.insert(i);
