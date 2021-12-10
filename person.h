@@ -7,11 +7,13 @@ using namespace std;
 
 class Person
 {
+    //member variables
     string name;
     set<string> films;
     int occupation;
 
 public:
+    //accessors and mutators
     enum Occupation { ACTOR, DIRECTOR, PRODUCER };
     Person();
     Person(string& name, Occupation occupation);
