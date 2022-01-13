@@ -75,7 +75,6 @@ void Interface(Graph& graph)
             cin >> firstName;
             cin >> lastName;
             name = firstName + " " + lastName;
-            //graph.Separation("Kevin Bacon", input);
             string name2 = "Kevin Bacon";
             vector<Person> v = graph.BFS(name, name2);
             cout << "Degrees: " << v.size() << endl;
@@ -90,7 +89,6 @@ void Interface(Graph& graph)
             cin >> firstName;
             cin >> lastName;
             name = firstName + " " + lastName;
-            //graph.Separation("Kevin Bacon", input);
         }
         else if (input == 4)
         {
@@ -98,7 +96,6 @@ void Interface(Graph& graph)
             cin >> firstName;
             cin >> lastName;
             name = firstName + " " + lastName;
-            //graph.Separation("Kevin Bacon", input);
         }
         else if (input == 5)
         {
@@ -111,7 +108,6 @@ void Interface(Graph& graph)
             cin >> firstName2;
             cin >> lastName2;
             name2 = firstName2 + " " + lastName2;
-            //graph.Separation(name, name2);
             firstName2.clear();
             lastName2.clear();
             name2.clear();
@@ -127,7 +123,7 @@ void Interface(Graph& graph)
             string again;
             cin >> again;
             if (again == "y")
-                cout << "\033[2J\033[1;1H"; //this clears the terminal lol idk how
+                cout << "\033[2J\033[1;1H"; //this clears the terminal
             if (again == "n")
                 run = false;
         }
@@ -197,7 +193,6 @@ void BuildGraph(Graph& graph)
                             if (j < k - 1)
                                 cast = cast.substr(actorName.length() + 2);
                         }
-                        //mark use actorName here to build graph
                         crew.push_back(make_pair(actorName, Person::ACTOR));
                     }
 
@@ -225,7 +220,6 @@ void BuildGraph(Graph& graph)
                                 if (j < m - 1)
                                     directors = directors.substr(directorName.length() + 2);
                             }
-                            //mark use directorName here to build graph
                             crew.push_back(make_pair(directorName, Person::DIRECTOR));
                         }
 
@@ -260,7 +254,6 @@ void BuildGraph(Graph& graph)
                                 }
                                 if (producerName != ",")
                                 {
-                                    //mark use producerName here to build graph
                                     crew.push_back(make_pair(producerName, Person::PRODUCER));
                                 }
                             }

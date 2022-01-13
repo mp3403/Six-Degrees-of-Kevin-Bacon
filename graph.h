@@ -19,7 +19,6 @@ public:
     int V(); //returns num vertices
     int E(); //returns num edges
 
-    //void insert(Person& p);
     void insert(vector<pair<string, Person::Occupation>> crew, string title);
     bool pathExistsBFS(string& from, string& to); // returns if path exists
     vector<Person> BFS(string& from, string& to); // returns path
