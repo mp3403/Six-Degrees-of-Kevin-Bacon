@@ -5,8 +5,10 @@
 #include <string>
 #include <set>
 #include <algorithm>
+#include <chrono>
 using namespace std;
 
+//Displays menu in console
 void Menu()
 {
     cout << "                 Six Degrees of Kevin Bacon                 " << endl;
@@ -14,17 +16,18 @@ void Menu()
     cout << "[1] Check if 2 actors, producers, or directors" << endl;
     cout << "    have a connection of any length" << endl;
     cout << endl;
-    cout << "	 Calculate the degrees of separation of :" << endl;
-    cout << "[2] Kevin Bacon and any actor / actress" << endl;
-    cout << "[3] Kevin Bacon and any director" << endl;
-    cout << "[4] Kevin Bacon and any producer" << endl;
-    cout << "[5] Any combination of 2 actors, directors, or producers" << endl;
-    cout << "[6] Exit" << endl;
+    cout << "      Calculate the degrees of separation of:" << endl;
+    cout << "[2] Kevin Bacon and any actor, director, or producer" << endl;
+    cout << "[3] Any combination of 2 actors, directors, or producers" << endl;
+    cout << "[4] Exit" << endl;
     cout << "============================================================" << endl;
     cout << endl;
     cout << "Enter a menu option: ";
 }
 
+//Prints program menu, prompts user for selection of feature, 
+//executes respective feature, prompts user for input,
+//and calls appropriate graph functions
 void Interface(Graph& graph)
 {
     bool run = true;
@@ -36,7 +39,7 @@ void Interface(Graph& graph)
         cin >> input;
         cout << endl;
 
-
+        //choose functionality
         if (input == 1)
         {
             cout << "Enter the first and last name of the first actor/director/producer: ";
@@ -50,20 +53,27 @@ void Interface(Graph& graph)
             name2 = firstName2 + " " + lastName2;
             
             //start timer
+            auto begin = chrono::steady_clock::now();
             bool exists = graph.pathExistsBFS(name, name2);
             //stop timer
+            auto end = chrono::steady_clock::now();
+            auto time = chrono::duration_cast<chrono::milliseconds>(end - begin);
+
             if (exists)
                 cout << "Path exists! " << endl;
             else
                 cout << "No path exists! " << endl;
             cout << "BFS: ";
-            //cout << "Time elapsed: " << time elapsed << " milliseconds << endl;
+            cout << "Time elapsed: " << time.count() << " milliseconds " << endl;
 
             //start timer again
+            begin = chrono::steady_clock::now();
             exists = graph.DFS(name, name2);
             //stop timer again
+            end = chrono::steady_clock::now();
+            time = chrono::duration_cast<chrono::milliseconds>(end - begin);
             cout << "DFS: ";
-            //cout << "Time elapsed: " << time elapsed << " milliseconds << endl;
+            cout << "Time elapsed: " << time.count() << " milliseconds " << endl;
 
             firstName2.clear();
             lastName2.clear();
@@ -75,29 +85,19 @@ void Interface(Graph& graph)
             cin >> firstName;
             cin >> lastName;
             name = firstName + " " + lastName;
+            //graph algorithm
             string name2 = "Kevin Bacon";
             vector<Person> v = graph.BFS(name, name2);
-            cout << "Degrees: " << v.size() << endl;
-            cout << name;
-            for (Person p : v)
-                cout << " ---> " << p.getName();
-            cout << name2 << endl;
+            cout << "Degrees: " << v.size() - 2 << endl;
+            cout << "Kevin Bacon ---> ";
+            for (int i = 2; i < v.size() - 1; i++)
+            {
+                if (i != v.size() && i != 0)
+                    cout << v[i].getName() << " ---> ";
+            }
+            cout << name << endl;
         }
         else if (input == 3)
-        {
-            cout << "Enter the first and last name of any director: ";
-            cin >> firstName;
-            cin >> lastName;
-            name = firstName + " " + lastName;
-        }
-        else if (input == 4)
-        {
-            cout << "Enter the first and last name of any producer: ";
-            cin >> firstName;
-            cin >> lastName;
-            name = firstName + " " + lastName;
-        }
-        else if (input == 5)
         {
             cout << "Enter the first and last name of the first actor / actress: ";
             cin >> firstName;
@@ -108,11 +108,21 @@ void Interface(Graph& graph)
             cin >> firstName2;
             cin >> lastName2;
             name2 = firstName2 + " " + lastName2;
+            //graph algorithm
+            vector<Person> v = graph.BFS(name, name2);
+            cout << "Degrees: " << v.size() - 1 << endl;
+            cout << name2 << " ---> ";
+            for (int i = 1; i < v.size() - 1; i++)
+            {
+                if (i != v.size() && i != 0)
+                    cout << v[i].getName() << " ---> ";
+            }
+            cout << name << endl;
             firstName2.clear();
             lastName2.clear();
             name2.clear();
         }
-        if (input == 6)
+        if (input == 4)
             run = false;
         else
         {
@@ -130,6 +140,8 @@ void Interface(Graph& graph)
     }
 }
 
+//constructs graph object
+//takes about 2 minutes to execute at start of program
 void BuildGraph(Graph& graph)
 {
     ifstream file("data.txt");
@@ -163,6 +175,7 @@ void BuildGraph(Graph& graph)
             bool left = count(line.begin(), line.end(), '[');
             bool right = count(line.begin(), line.end(), ']');
 
+            //checks if data fields exist for this line in data
             if (hasTitle > 0 && hasCast > 0 && hasDirectors > 0 && hasProducers > 0 && titleFilm < 0 && castActor < 0 && castActress < 0 && hasBR < 0 && hasDash < 0 && (left == right))
             {
                 vector<pair<string,Person::Occupation>> crew;
@@ -223,11 +236,8 @@ void BuildGraph(Graph& graph)
                             crew.push_back(make_pair(directorName, Person::DIRECTOR));
                         }
 
-
                         producers = line.substr(1, line.find("companies") - 4);
                         line = line.substr(line.find("companies") + 10);
-
-
 
                         if (producers.length() != 0 && producers.at(0) != ']' && producers != "[]}" && producers != "[]" && line != ":[]}") {
                             directors = line.substr(1, line.find("companies") - 4);
@@ -253,14 +263,12 @@ void BuildGraph(Graph& graph)
                                         producers = producers.substr(producerName.length() + 2);
                                 }
                                 if (producerName != ",")
-                                {
                                     crew.push_back(make_pair(producerName, Person::PRODUCER));
-                                }
                             }
                         }
                     }
                 }
-
+                //inserts all persons involved in this film into graph and creates connections between them
                 graph.insert(crew, title);
             }
         }
@@ -271,8 +279,8 @@ void BuildGraph(Graph& graph)
 int main()
 {
     Graph graph;
-    BuildGraph(graph); //builds graph from .txt data
-    Interface(graph);
+    BuildGraph(graph);  //builds graph from .txt data
+    Interface(graph);   //promts user for input
 
     return 0;
 }

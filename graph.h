@@ -3,19 +3,25 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
+#include <iostream>
 
 using namespace std;
 
 class Graph
 {
+    //containers
     unordered_map<string, Person>* m;
     unordered_map<string, set<string>>* adjList;
 
 public:
+    //function prototypes
+    //big three
     Graph();
     Graph(const Graph& g);
     ~Graph();
     void operator=(const Graph& g);
+
+    //accessors
     int V(); //returns num vertices
     int E(); //returns num edges
 
